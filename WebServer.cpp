@@ -173,22 +173,22 @@ bool doWebServer()
                   break;
                 case CMD_SET_IP:
                   {
-                    getIpAddress(&whstate.ip[0], &whstate.ip[1], &whstate.ip[2], &whstate.ip[3]);
-                    whstate.ip[intval-1] = byteval;
-                    setIpAddress(whstate.ip[0],whstate.ip[1],whstate.ip[2],whstate.ip[3]);
+                    getIpAddress(&whstate.ip.ip[0], &whstate.ip.ip[1], &whstate.ip.ip[2], &whstate.ip.ip[3],&whstate.ip.dhcp);
+                    whstate.ip.ip[intval-1] = byteval;
+                    setIpAddress(whstate.ip.ip[0],whstate.ip.ip[1],whstate.ip.ip[2],whstate.ip.ip[3]);
                   }
                   
                   requestcommand = CMD_JSON;  // override the command so the output is the status of the change
                   whstate.settingsSaved = false;
                   break;
                 case CMD_SET_RADIO_ID:
-                  whstate.radio[0] = (uint8_t)intval;
+                  whstate.radio.id = (uint8_t)intval;
                   setRadioId(intval);
                   requestcommand = CMD_JSON;
                   whstate.settingsSaved = false;
                   break;
                 case CMD_SET_RADIO_CHANNEL:
-                  whstate.radio[1] = (uint8_t)intval;
+                  whstate.radio.channel = (uint8_t)intval;
                   setRadioChannel(intval);
                   requestcommand = CMD_JSON;
                   whstate.settingsSaved = false;
@@ -267,6 +267,8 @@ bool doWebServer()
                   client.print(whstate.settingsSaved ? 1 : 0);
                   client.print(F(",\"ip\":\""));
                   client.print(getIpAddress());
+                  client.print(F(",\"dhcp\":\""));
+                  client.print(whstate.ip.dhcp ? "1":"0");
                   client.print(F("\",\"radio_id\":"));
                   client.print(getRadioId());
                   client.print(F(",\"radio_ch\":"));

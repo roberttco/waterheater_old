@@ -58,7 +58,7 @@ void setup()
   digitalWrite(N_RELAY1_PIN,HIGH);    // relay is active low
   digitalWrite(N_RELAY2_PIN,HIGH);    // relay is active low
 
-  DEBUG_PRINT (F("\r\n-------\r\n"));
+  Serial.println (F("BOOT"));
 
   // if the reset pin is low then reset everything to defaults
   if (digitalRead(RESET_PIN) == 0)  
@@ -87,10 +87,13 @@ void setup()
   }
   else
   {
+    whstate.radio.id = getRadioId();
+    whstate.radio.channel = getRadioChannel();
+    
     Serial.print (F("Radio ID: "));
-    Serial.print (getRadioId());
+    Serial.print (whstate.radio.id);
     Serial.print (F(", Radio Channel: "));
-    Serial.println (getRadioChannel());
+    Serial.println (whstate.radio.channel);
   }
 
   if (!initTemperatureSensor())
@@ -117,8 +120,8 @@ void setup()
   else
   {
     Serial.println(getIpAddress());
+    getIpAddress(&whstate.ip.ip[0], &whstate.ip.ip[1], &whstate.ip.ip[2], &whstate.ip.ip[3], &whstate.ip.dhcp);
   }
-
 
   whcontrol.enable = true;
 
@@ -128,23 +131,35 @@ void setup()
   timer.every(TEMP_UPDATE_INTERVAL,updateTemperature);
   timer.every(WHSM_INVOKE_INTERVAL,doWaterHeaterSM);
   timer.every(FLOW_CALC_INTERVAL,doCalculateWaterFlow);
-  timer.every(NETWORK_RECONNECT_INTERVAL,checkNetworkConnection);
-
+  
   wdt_enable(WDTO_4S);
 }
 
 unsigned long lastSend = 0;
-
+unsigned long lastNetCheck = 0;
 void loop()
 {
   timer.tick();
+
+  // Can't do this with timer.every without some rework so do this here.  Check for a 
+  // new connection (cable plug in) only oif the system is not heating.  This is because
+  // a DHCP timeout is very long and may cause heating to go too far.
+  if ((whstate.heating == false) && (millis() - lastNetCheck > NETWORK_RECONNECT_INTERVAL))
+  {
+    if (checkNetworkCablePlugin())
+    {
+      getIpAddress(&whstate.ip.ip[0], &whstate.ip.ip[1], &whstate.ip.ip[2], &whstate.ip.ip[3], &whstate.ip.dhcp);
+    }
+    lastNetCheck = millis();
+  }
 
   if (networkConnected())
   {
     doWebServer();
     renewDhcpLease();
   }
-  
+
+  // Need to pass the information to a radio send function to use the timer.every method
   if (radioOk() && (millis() - lastSend > RADIO_SEND_INTERVAL))
   {
       DEBUG_PRINT(F("Sending state.  Length = "));

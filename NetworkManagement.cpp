@@ -35,12 +35,14 @@ bool networkConnected()
   return (connectionStatus != NETWORK_DISCONNECTED);
 }
 
-void getIpAddress(byte *ip1, byte *ip2, byte *ip3, byte *ip4)
+void getIpAddress(byte *ip1, byte *ip2, byte *ip3, byte *ip4, bool *dhcp)
 {
   *ip1 = ip[0];
   *ip2 = ip[1];
   *ip3 = ip[2];
   *ip4 = ip[3];
+
+  *dhcp = (connectionStatus == NETWORK_DHCP);
 }
 
 IPAddress getIpAddress()
@@ -161,8 +163,11 @@ void renewDhcpLease()
   }
 }
 
-bool checkNetworkConnection()
+// return true if the cable was plugged in
+bool checkNetworkCablePlugin()
 {
+  bool rval = false;
+  
   EthernetLinkStatus linkStatus = Ethernet.linkStatus();
 
   if (lastLinkStatus == LinkOFF && linkStatus == LinkON)  // cable plug-in
@@ -171,6 +176,7 @@ bool checkNetworkConnection()
     if (initNetwork())
     {
       connectToNetwork(false);
+      rval = true;
     }
   }
   else if (lastLinkStatus == LinkON && linkStatus == LinkOFF) // cable unplug
@@ -181,5 +187,5 @@ bool checkNetworkConnection()
   }
 
   lastLinkStatus = linkStatus;
-  return true;
+  return rval;
 }

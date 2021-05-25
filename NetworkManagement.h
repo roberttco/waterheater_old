@@ -27,13 +27,13 @@ bool networkConnected();
 void renewDhcpLease();
 void saveIpAddress();
 void setIPAddress(IPAddress address);
-void getIpAddress(byte *ip1, byte *ip2, byte *ip3, byte *ip4);
+void getIpAddress(byte *ip1, byte *ip2, byte *ip3, byte *ip4, bool *dhcp);
 IPAddress getIpAddress();
 EthernetServer getServer();
 EthernetClient getClient();
 bool setIpAddress(byte ip1, byte ip2, byte ip3, byte ip4);
 bool initNetwork();
 bool networkOk();
-bool checkNetworkConnection();
+bool checkNetworkCablePlugin();
 
 #endif

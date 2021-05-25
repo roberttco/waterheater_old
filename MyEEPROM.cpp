@@ -22,13 +22,12 @@ void setDefaultEEPROMSettings(uint16_t lastAddress)
   EEPROM.put(RADIO_CHANNEL_ADDRESS,(byte)RADIO_CHANNEL);
 }
 
-bool getEEPROMFloatValue(int address,float *variable, float default_value, bool save)
+bool getEEPROMFloatValue(unsigned int address,float *variable, float default_value, bool save)
 {
   EPDEBUG_PRINTLN(F("Getting EEPROM float value"));
 
   if (address > EEPROM.length())
   {
-    *variable = NULL;
     return false;
   }
 
@@ -57,13 +56,12 @@ bool getEEPROMFloatValue(int address,float *variable, float default_value, bool 
   return hadToSave;
 }
 
-bool getEEPROMUnsignedLongValue(int address,unsigned long *variable, unsigned long default_value, bool save)
+bool getEEPROMUnsignedLongValue(unsigned int address,unsigned long *variable, unsigned long default_value, bool save)
 {
   EPDEBUG_PRINTLN(F("Getting EEPROM unsigned long value"));
 
   if (address > EEPROM.length())
   {
-    *variable = NULL;
     return false;
   }
 
@@ -92,13 +90,12 @@ bool getEEPROMUnsignedLongValue(int address,unsigned long *variable, unsigned lo
   return hadToSave;
 }
 
-bool getEEPROMByteValue(int address,unsigned char *variable, unsigned char default_value, bool save)
+bool getEEPROMByteValue(unsigned int address,unsigned char *variable, unsigned char default_value, bool save)
 {
   EPDEBUG_PRINTLN(F("Getting EEPROM unsigned char value"));
 
   if (address > EEPROM.length())
   {
-    *variable = NULL;
     return false;
   }
 
@@ -127,13 +124,12 @@ bool getEEPROMByteValue(int address,unsigned char *variable, unsigned char defau
   return hadToSave;
 }
 
-bool getEEPROMIntValue(int address,int *variable, int default_value, bool save)
+bool getEEPROMIntValue(unsigned int address,int *variable, int default_value, bool save)
 {
   EPDEBUG_PRINTLN(F("Getting EEPROM int value"));
 
   if (address > EEPROM.length())
   {
-    *variable = NULL;
     return false;
   }
 

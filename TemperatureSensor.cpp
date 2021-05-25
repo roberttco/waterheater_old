@@ -74,7 +74,7 @@ float getTemperature(bool reRead)
   return _lastTemperature;
 }
 
-bool updateTemperature()
+bool updateTemperature(void *arg)
 {
   readTemperature();
   return true;

@@ -10,7 +10,7 @@
 #include "WebServer.h"
 #include "Radio.h"
 
-unsigned char buf[MAX_BUFLEN];
+char buf[MAX_BUFLEN];
 char path[PATH_BUFLEN];
 
 #ifdef PetitFS_h
@@ -237,16 +237,6 @@ bool doWebServer()
               switch (requestcommand)
               {
                 case CMD_JSON:
-                  bool heating;
-  bool pump;
-  bool valve;
-  bool forced;
-  bool paused;
-  float temperature_c;
-  float flowrate_lpm;
-  bool settingsSaved;
-  byte ip[4];
-  byte radio[2];
                   client.print(F("{\"state\":{\"temp_f\":"));
                   client.print(whstate.temperature_c * 1.8 + 32);
                   client.print(F(",\"temp_c\":"));

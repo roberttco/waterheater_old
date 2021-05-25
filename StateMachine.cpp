@@ -98,7 +98,7 @@ void closeValveAndTurnOffPump()
 
 static unsigned long lastFlowMeasurementTime = 0;
 
-bool doCalculateWaterFlow()
+bool doCalculateWaterFlow(void *arg)
 {
   unsigned long timeNow = millis();
   
@@ -119,41 +119,41 @@ bool doCalculateWaterFlow()
   return true;
 }
 
-bool doWaterHeaterPauseCheck()
+bool doWaterHeaterPauseCheck(void *arg)
 {
   pause_timer.tick();
   return true;
 }
 
-bool smUnpause()
+bool smUnpause(void *arg)
 {
   // if the flow is over the limit of if the delay is set to 0, then cancel the timer
   if (whstate.flowrate_lpm >= whcontrol.pfl_lpm)
   {
     SMDEBUG_PRINTLN(F("!un_pse"));
-    unpause_task = NULL;
+    unpause_task = 0;
   }
   else
   {
     SMDEBUG_PRINTLN(F("un_pse"));
     whstate.paused = false;
-    pause_task = NULL;
+    pause_task = 0;
   }
 
   return false;
 }
 
-bool smPause()
+bool smPause(void *arg)
 {
   if (whstate.flowrate_lpm < whcontrol.pfl_lpm)
   {
     SMDEBUG_PRINTLN(F("!pse"));
-    pause_task = NULL;
+    pause_task = 0;
   }
   else
   {
     SMDEBUG_PRINTLN(F("pse"));
-    unpause_task = NULL;
+    unpause_task = 0;
     
     whstate.heating = false;
     whstate.paused  = true;
@@ -162,7 +162,7 @@ bool smPause()
   return false;
 }
 
-bool doWaterHeaterSM()
+bool doWaterHeaterSM(void *arg)
 {
   // temp is auto updated every TEMP_UPDATE_INTERVAL milliseconds
   whstate.temperature_c = getTemperature(false);
@@ -185,9 +185,9 @@ bool doWaterHeaterSM()
     SMDEBUG_PRINT(F(", pfl_lpm = "));
     SMDEBUG_PRINT(whcontrol.pfl_lpm);
     SMDEBUG_PRINT(F(", unpause_task = "));
-    SMDEBUG_PRINTLN(unpause_task == NULL ? "NULL" : "NOT_NULL");
+    SMDEBUG_PRINTLN(unpause_task == 0 ? "NULL" : "NOT_NULL");
     
-    if ((whstate.flowrate_lpm < whcontrol.pfl_lpm) && (unpause_task == NULL))
+    if ((whstate.flowrate_lpm < whcontrol.pfl_lpm) && (unpause_task == 0))
     {
       unpause_task = pause_timer.in(whcontrol.unpausedelayms,smUnpause);        
     }
@@ -207,7 +207,7 @@ bool doWaterHeaterSM()
       openValveAndStartPump();
     }
 
-    if ((whstate.flowrate_lpm >= whcontrol.pfl_lpm) && (pause_task == NULL))
+    if ((whstate.flowrate_lpm >= whcontrol.pfl_lpm) && (pause_task == 0))
     {
       SMDEBUG_PRINTLN("Gonna pause");
       pause_task = pause_timer.in(whcontrol.pausedelayms,smPause);

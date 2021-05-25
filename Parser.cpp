@@ -29,7 +29,7 @@ int parseCommandLine(char *buf, char *path, int path_buf_len, float *floatval, i
     cmdlength = 3;
   }
     
-  //Theorhetically, the buffer contains the entire command line that is of interest (e.g. command and command path)
+  //Theoretically, the buffer contains the entire command line that is of interest (e.g. command and command path)
 
   byte beginningofpath = 0;
   byte pathlength = 0;
